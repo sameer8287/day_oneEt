@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:et/views/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 
 import '../apiModel/apidatamodel.dart';
 
@@ -18,40 +20,38 @@ class _Second_pageState extends State<Second_page> {
 
   @override
   void initState() {
-    apidat();
+    Future.delayed(Duration(seconds: 3));
     super.initState();
   }
 
-  List<Apidatamodel> lst = [Apidatamodel(name: 'sameer')];
-
-  Future<List<Apidatamodel>> apidat() async {
-    Response response = await get(
-        Uri.parse(
-            'https://demo.extensionerp.com/api/resource/Employee Checkin'),
-        headers: {'Authorization': 'token 2f8692b89331cc8:c0b6275c3573da3'});
-
-    var data = jsonDecode(response.body)["data"];
-    for (Map i in data) {
-      lst.add(Apidatamodel.fromJson(i));
-      // log(i.toString());
-      // log(data.toString());
-    }
-    log("random" + lst.toString());
-    // print(lst);
-    return lst;
-    // print(data);
-  }
+  List lst = [];
 
   @override
   Widget build(BuildContext context) {
     print(lst.toString());
     return Scaffold(
-      body: Center(
-          // child:
-          child: ListView.builder(
-        itemCount: lst.length,
-        itemBuilder: (context, index) => Text(lst[index].name),
-      )),
+      appBar: AppBar(
+        title: Text('My App'),
+      ),
+      body: Consumer<MyProvider>(
+        builder: (context, provider, _) {
+          if (provider.data.isEmpty) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            return ListView.builder(
+              itemCount: provider.data.length,
+              itemBuilder: (context, index) =>
+                  ListTile(title: Text(provider.data[index])),
+            );
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Provider.of<MyProvider>(context, listen: false).fetchData();
+        },
+        child: Icon(Icons.refresh),
+      ),
     );
   }
 }

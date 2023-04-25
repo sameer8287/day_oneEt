@@ -1,9 +1,16 @@
 import 'package:et/views/Login_page.dart';
+import 'package:et/views/provider.dart';
 import 'package:et/views/second_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp( MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => MyProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
